@@ -1,22 +1,49 @@
 package com.sdh.springdemo.user.dao;
 
 import com.sdh.springdemo.user.domain.User;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
+@ContextConfiguration(locations = "/test-applicationContext.xml")
 public class UserDaoTest {
+    User user1;
+    User user2;
+    User user3;
+    UserDao dao;
+    @Autowired
+    ApplicationContext context;
+    @Before
+    public void getUserDao() {
+
+
+        dao = context.getBean("userDao", UserDao.class);
+
+        String name1 = "test1";
+        String name2 = "test2";
+        String name3 = "test3";
+        this.user1 = new User(name1,name1,name1);
+        this.user2 = new User(name2,name2,name2);
+        this.user3 = new User(name3,name3,name3);
+    }
+
     @Test
     public void equalityFactory() {
         UserDaoFactory factory = new UserDaoFactory();
@@ -42,21 +69,15 @@ public class UserDaoTest {
 
     @Test
     public void userAddAndGet() throws SQLException, ClassNotFoundException {
-        ApplicationContext ac = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao dao = ac.getBean("userDao", UserDao.class);
-        User user = new User();
-        String test1 = "테스트1";
+
+        String test1 = "test1";
         String test2 = "test2";
-        user.setName(test1);
-        user.setPassword(test1);
-        user.setId(test1);
-        User user2 = new User(test2,test2,test2);
 
 
         dao.deleteAll();
         assertThat(dao.getCount()).isEqualTo(0);
 
-        dao.add(user);
+        dao.add(user1);
         assertThat(dao.getCount()).isEqualTo(1);
 
         dao.add(user2);
@@ -65,7 +86,7 @@ public class UserDaoTest {
 
 
         User newUser = dao.get(test1);
-        assertThat(newUser.getId()).isEqualTo(user.getId());
+        assertThat(newUser.getId()).isEqualTo(user1.getId());
 
         newUser = dao.get(test2);
         assertThat(newUser.getId()).isEqualTo(user2.getId());
@@ -74,24 +95,31 @@ public class UserDaoTest {
 
     @Test
     public void count() throws SQLException, ClassNotFoundException {
-        ApplicationContext ac = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao userDao = ac.getBean("userDao", UserDao.class);
+
         String name = "test";
-        List<User> users = new ArrayList();
-        for( int i = 0 ; i < 3 ; i++) {
-            users.add(new User(name+i,name+i,name+i));
-        }
+        List<User> users = Stream.of(user1,user2,user3).collect(Collectors.toList());
 
-        userDao.deleteAll();
-        assertThat(userDao.getCount()).isEqualTo(0);
+        dao.deleteAll();
+        assertThat(dao.getCount()).isEqualTo(0);
 
-        userDao.add(users.get(0));
-        assertThat(userDao.getCount()).isEqualTo(1);
+        dao.add(users.get(0));
+        assertThat(dao.getCount()).isEqualTo(1);
 
-        userDao.add(users.get(1));
-        assertThat(userDao.getCount()).isEqualTo(2);
-        userDao.add(users.get(2));
-        assertThat(userDao.getCount()).isEqualTo(3);
+        dao.add(users.get(1));
+        assertThat(dao.getCount()).isEqualTo(2);
+        dao.add(users.get(2));
+        assertThat(dao.getCount()).isEqualTo(3);
+
+    }
+
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void getUserFailure() throws SQLException, ClassNotFoundException {
+
+        dao.deleteAll();
+
+        assertThat(dao.getCount()).isEqualTo(0);
+
+        User user = dao.get("unkown_id");
 
     }
 
