@@ -3,17 +3,15 @@ package com.sdh.springdemo.user.dao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 
 @Configuration
 public class UserDaoFactory {
     @Bean
-    UserDao userDao() {
+    UserDaoJdbc userDao() {
         // db접속 방식을 담당하는 SimpleConnectionMaker를 결정해서 userDao를 생성하는 책임을 갖는다.
-        UserDao dao = new UserDao();
+        UserDaoJdbc dao = new UserDaoJdbc();
         dao.setDataSource(dataSource());
         return dao;
     }

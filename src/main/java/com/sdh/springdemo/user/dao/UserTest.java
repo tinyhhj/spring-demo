@@ -2,16 +2,15 @@ package com.sdh.springdemo.user.dao;
 
 import com.sdh.springdemo.user.domain.User;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import java.sql.SQLException;
 
-public class UserDaoTest {
+public class UserTest {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 //        ApplicationContext context = new AnnotationConfigApplicationContext(UserDaoFactory.class);
         ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
-        UserDao dao = context.getBean("userDao" ,UserDao.class);
+        UserDaoJdbc dao = context.getBean("userDao" , UserDaoJdbc.class);
 
         User user = new User();
         user.setId("whiteship");

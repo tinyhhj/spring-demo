@@ -63,6 +63,13 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/p6spy/p6spy -->
+		<dependency>
+			<groupId>p6spy</groupId>
+			<artifactId>p6spy</artifactId>
+			<version>3.8.7</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
